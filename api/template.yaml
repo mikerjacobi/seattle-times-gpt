@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  seattle-times-gpt-api
+
+Parameters:
+  Env:
+    Type: String
+    Default: sandbox
+  OpenAIAPIKey:
+    Type: String
+  AssistantID:
+    Type: String
+    Default: asst_3Xng153HayyOv252kCrTzch4
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+    Runtime: python3.11
+    Environment:
+      Variables:
+        ENV: !Ref Env
+        OPENAI_API_KEY: !Ref OpenAIAPIKey
+        ASSISTANT_ID: !Ref AssistantID
+        LOG_LEVEL: INFO
+
+Resources:
+  SeattleTimesGPTAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Env
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+  SeattleTimesGPTAPIFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub seattle-times-gpt-api-${Env}
+      CodeUri: src
+      Handler: app.lambda_handler
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SeattleTimesGPTAPI
+            Path: /hello
+            Method: GET
+        SubmitPrompt:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SeattleTimesGPTAPI
+            Path: /prompt
+            Method: POST
+        CheckPromptPrompt:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SeattleTimesGPTAPI
+            Path: /prompt/{thread_id}/{run_id}
+            Method: GET
+
+Outputs:
+  SeattleTimesGPTAPI:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${SeattleTimesGPTAPI}.execute-api.${AWS::Region}.amazonaws.com/${Env}"
