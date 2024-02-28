@@ -7,8 +7,6 @@ Parameters:
   Env:
     Type: String
     Default: sandbox
-  OpenAIAPIKey:
-    Type: String
   AssistantID:
     Type: String
     Default: asst_3Xng153HayyOv252kCrTzch4
@@ -21,7 +19,6 @@ Globals:
     Environment:
       Variables:
         ENV: !Ref Env
-        OPENAI_API_KEY: !Ref OpenAIAPIKey
         ASSISTANT_ID: !Ref AssistantID
         LOG_LEVEL: INFO
 
@@ -40,6 +37,9 @@ Resources:
       FunctionName: !Sub seattle-times-gpt-api-${Env}
       CodeUri: src
       Handler: app.lambda_handler
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: "arn:aws:secretsmanager:us-east-1:532898105683:secret:seattle-times-gpt/prod/openai-mTJpak"
       Events:
         HelloWorld:
           Type: Api

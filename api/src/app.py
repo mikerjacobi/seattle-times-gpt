@@ -11,23 +11,15 @@ from aws_lambda_powertools.event_handler import APIGatewayRestResolver, CORSConf
 from hello_world_handler import handle_hello_world
 from submit_prompt_handler import handle_submit_prompt, SubmitPromptRequest
 from check_prompt_run_handler import handle_check_prompt_run, CheckPromptRunRequest
-from openai import OpenAI
 
 cors_config = CORSConfig(allow_origin="*", allow_headers=["*"])
 app = APIGatewayRestResolver(cors=cors_config)
 
-# dynamodb = boto3.client("dynamodb")
 env = os.environ["ENV"]
 asst_id = os.environ["ASSISTANT_ID"]
-if env == "sandbox":
-    # dynamodb_url = os.environ["TP_DYNAMODB_URL"]
-    # dynamodb = boto3.client("dynamodb", endpoint_url=dynamodb_url)
-    pass
 
 ctx = AppContext(
     boto3.client("s3"),
-    # dynamodb,
-    OpenAI(),
     env,
     assistant_id=asst_id,
 )

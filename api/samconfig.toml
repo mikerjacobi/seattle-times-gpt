@@ -51,6 +51,5 @@ confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = """
   Env="prod" 
-  OpenAIAPIKey="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"
 """
 image_repositories = []
